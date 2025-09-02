@@ -18,6 +18,17 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
+    public User registerUser(String username, String email, String password) {
+        String hashedPassword = passwordEncoder.encode(password);
+
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(hashedPassword);
+
+        return userRepository.save(user);
+    }
+
     public String login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Cannot find user with email:  " + email));
