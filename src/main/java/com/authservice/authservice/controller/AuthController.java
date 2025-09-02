@@ -7,6 +7,7 @@ import com.authservice.authservice.service.AuthService;
 import com.authservice.authservice.service.JWTService;
 import com.authservice.authservice.dto.LoginRequest;
 import com.authservice.authservice.dto.ValidationResponse;
+import com.authservice.authservice.model.User;
 
 import io.jsonwebtoken.Claims;
 
@@ -53,6 +54,11 @@ public class AuthController {
                 claims.get("username", String.class),
                 rolesSet
         );
+    }
+
+    @PostMapping("/register")
+    public User registerUser(@RequestBody User user) {
+        return authService.registerUser(user.getUsername(), user.getEmail(), user.getPassword());
     }
     
     @PostMapping("/login")
