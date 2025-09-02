@@ -11,3 +11,5 @@ public class AuthserviceApplication {
 	}
 
 }
+
+//openssl rand -base64 64
