@@ -31,37 +31,36 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    @GetMapping("/validate")
+    public ValidationResponse validateToken(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+        String token = authHeader.substring(7);
 
-@GetMapping("/validate")
-public ValidationResponse validateToken(@RequestHeader("Authorization") String authHeader) {
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-        throw new RuntimeException("Missing or invalid Authorization header");
+        boolean valid = jwtService.validateToken(token);
+        if (!valid) {
+            throw new RuntimeException("Invalid or expired token");
+        }
+
+        Claims claims = jwtService.getClaims(token);
+
+        Object rolesObj = claims.get("roles");
+        Set<String> rolesSet;
+        if (rolesObj instanceof List<?> rolesList) {
+            rolesSet = rolesList.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toSet());
+        } else {
+            rolesSet = Set.of();
+        }
+
+        return new ValidationResponse(
+                claims.getSubject(),
+                claims.get("username", String.class),
+                rolesSet
+        );
     }
-    String token = authHeader.substring(7);
-
-    boolean valid = jwtService.validateToken(token);
-    if (!valid) {
-        throw new RuntimeException("Invalid or expired token");
-    }
-
-    Claims claims = jwtService.getClaims(token);
-
-    Object rolesObj = claims.get("roles");
-    Set<String> rolesSet;
-    if (rolesObj instanceof List<?> rolesList) {
-        rolesSet = rolesList.stream()
-                .map(Object::toString)
-                .collect(Collectors.toSet());
-    } else {
-        rolesSet = Set.of();
-    }
-
-    return new ValidationResponse(
-            claims.getSubject(),
-            claims.get("username", String.class),
-            rolesSet
-    );
-}
 
     @PostMapping("/register")
     public User registerUser(@RequestBody User user) {
