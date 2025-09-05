@@ -3,19 +3,23 @@ package com.authservice.authservice.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.authservice.authservice.model.Role;
 import com.authservice.authservice.model.User;
+import com.authservice.authservice.repository.RoleRepository;
 import com.authservice.authservice.repository.UserRepository;
 
 @Service
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final JWTService jwtService;
 
-    public AuthService(JWTService jwtService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public AuthService(JWTService jwtService, PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     public User registerUser(String username, String email, String password) {
@@ -26,7 +30,14 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(hashedPassword);
 
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        Role role = new Role();
+        role.setRole("USER");
+        role.setUserId(user.getId());
+
+        roleRepository.save(role);
+        return user;
     }
 
     public String login(String email, String password) {
