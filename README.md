@@ -6,6 +6,27 @@ Auth Service of this application was built using Spring Boot and Maven. PosgreSQ
 
 ![Banner](./assets/application-tree.png)
 
+## 🪾 Branches
+* `/auth/validate` validate branch
+
+* `/auth/register` register branch
+    ```
+    body: {
+        username: string
+        email: string
+        password: string
+    }
+    ```
+
+* `/auth/login` login branch
+    ```
+    body: {
+        email: string
+        password: string
+    }
+    ```
+
+
 ## 🗒️ Features
 * JWT authorization method;
 * PostgreSQL databse;
